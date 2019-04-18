@@ -1,5 +1,5 @@
 # source: http://localhost:3000/api/graphql
-# timestamp: Wed Apr 24 2019 11:12:13 GMT+0200 (GMT+02:00)
+# timestamp: Tue Apr 30 2019 11:50:35 GMT+0200 (Central European Summer Time)
 
 """Application model"""
 type Application {
@@ -70,7 +70,9 @@ type Collective implements CollectiveInterface {
   hostFeePercent: Int
   currency: String
   image: String
+  imageUrl(height: Int, format: ImageFormat): String
   backgroundImage: String
+  backgroundImageUrl(height: Int, format: ImageFormat): String
   settings: JSON
 
   """Defines if a collective is pledged"""
@@ -242,7 +244,9 @@ interface CollectiveInterface {
   hostFeePercent: Int
   currency: String
   image: String
+  imageUrl(height: Int, format: ImageFormat): String
   backgroundImage: String
+  backgroundImageUrl(height: Int, format: ImageFormat): String
   settings: JSON
   data: JSON
   slug: String
@@ -514,7 +518,9 @@ type Event implements CollectiveInterface {
   hostFeePercent: Int
   currency: String
   image: String
+  imageUrl(height: Int, format: ImageFormat): String
   backgroundImage: String
+  backgroundImageUrl(height: Int, format: ImageFormat): String
   settings: JSON
 
   """Defines if a collective is pledged"""
@@ -731,6 +737,14 @@ enum HostCollectiveOrderFieldType {
 
   """Order hosts by updated time."""
   updatedAt
+}
+
+enum ImageFormat {
+  txt
+  png
+  jpg
+  gif
+  svg
 }
 
 """Input dates and collectives for Invoice"""
@@ -1250,7 +1264,9 @@ type Organization implements CollectiveInterface {
   hostFeePercent: Int
   currency: String
   image: String
+  imageUrl(height: Int, format: ImageFormat): String
   backgroundImage: String
+  backgroundImageUrl(height: Int, format: ImageFormat): String
   settings: JSON
 
   """Defines if a collective is pledged"""
@@ -1867,7 +1883,9 @@ type User implements CollectiveInterface {
   hostFeePercent: Int
   currency: String
   image: String
+  imageUrl(height: Int, format: ImageFormat): String
   backgroundImage: String
+  backgroundImageUrl(height: Int, format: ImageFormat): String
   settings: JSON
 
   """Defines if a collective is pledged"""
