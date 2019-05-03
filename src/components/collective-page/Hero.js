@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import styled, { css } from 'styled-components';
 import { Flex, Box } from '@rebass/grid';
 import { FormattedMessage, defineMessages } from 'react-intl';
 import { get } from 'lodash';
@@ -28,6 +29,23 @@ import Link from '../Link';
 import { AllSectionsNames, Dimensions } from './_constants';
 import NavBar from './NavBar';
 import HeroBackground from './HeroBackground';
+
+/**
+ * The main container that uses `sticky` to fix on top.
+ */
+const MainContainer = styled.div`
+  position: relative;
+  background: white;
+  top: 0;
+  border-bottom: 1px solid #e6e8eb;
+
+  ${props =>
+    props.isFixed &&
+    css`
+      position: fixed;
+      width: 100%;
+    `}
+`;
 
 /**
  * Collective's page Hero/Banner/Cover component. Also includes the NavBar
@@ -84,92 +102,105 @@ class Hero extends Component {
   });
 
   render() {
-    const { collective, host, canEditCollective, intl } = this.props;
+    const { collective, host, canEditCollective, intl, isFixed } = this.props;
     const { slug, twitterHandle, githubHandle, website } = this.props.collective;
     const { formatMessage } = intl;
 
     return (
-      <div>
+      <MainContainer isFixed={isFixed}>
         {/* Hero top */}
-        <Container position="relative" pb={4}>
-          <HeroBackground backgroundImage={collective.backgroundImage} />
+        <Container position="relative" pb={isFixed ? 0 : 4}>
+          {!isFixed && <HeroBackground backgroundImage={collective.backgroundImage} />}
           <Container maxWidth={Dimensions.MAX_SECTION_WIDTH} px={Dimensions.PADDING_X} margin="0 auto">
-            <Flex pt={40} flexWrap="wrap" width={1} justifyContent="center">
+            <Flex pt={isFixed ? 16 : 40} flexWrap="wrap" width={1} justifyContent="center">
               {/* Collective presentation (name, logo, description...) */}
-              <Box flex="1 1">
-                <Flex mb={2} justifyContent={['center', 'left']}>
-                  <AvatarWithHost collective={collective} host={host} radius={128} />
+              <Flex
+                flex="1 1"
+                flexWrap="wrap"
+                justifyContent={isFixed ? 'left' : ['center', null, null, 'left', 'center']}
+                flexDirection={isFixed ? 'row' : ['column', null, null, 'row', 'column']}
+              >
+                <Flex mb={2} justifyContent={['center', 'left']} mr={[0, 4]}>
+                  <AvatarWithHost collective={collective} host={host} radius={isFixed ? 40 : 128} />
                 </Flex>
-                <Flex flexDirection="column" flex="1 1 400px">
-                  <H1 fontSize="H3" textAlign={['center', 'left']}>
+                <Flex flexDirection="column" flex="1 1">
+                  <H1 fontSize={isFixed ? 'H5' : 'H3'} textAlign={['center', 'left']}>
                     {collective.name || collective.slug}
                   </H1>
-                  <Flex mb={[1, 2, 3]} alignItems="center" justifyContent={['center', 'flex-start']}>
-                    <StyledTag mr={2}>
-                      <I18nCollectiveTags tags={getCollectiveMainTag(get(collective, 'host.id'), collective.tags)} />
-                    </StyledTag>
-                    {host && (
-                      <Container ml={3} color="black.600">
-                        <FormattedMessage
-                          id="Collective.Hero.Host"
-                          defaultMessage="{FiscalHost}: {hostName}"
-                          values={{
-                            hostName: host.name,
-                            FiscalHost: <DefinedTerm term={Terms.FISCAL_HOST} />,
-                          }}
-                        />
-                      </Container>
-                    )}
-                  </Flex>
-                  <H2 mt={2} fontSize="LeadParagraph" lineHeight="24px" textAlign={['center', 'left']}>
-                    {collective.description}
-                  </H2>
-                </Flex>
-              </Box>
-              {/* Contact buttons */}
-              <Flex flexWrap="wrap" justifyContent="center" mt={48}>
-                <StyledButton disabled width={120} height={40} mb={3} mr={2} title="Coming soon">
-                  <Span mr={2}>
-                    <CheckCircle size="1em" />
-                  </Span>
-                  <FormattedMessage id="CollectivePage.Hero.Follow" defaultMessage="Follow" />
-                </StyledButton>
-                <Flex css={{ height: 40 }}>
-                  <a href={`mailto:hello@${slug}.opencollective.com`} title="Email">
-                    <StyledRoundButton size={40} mx={2}>
-                      <Mail size={14} />
-                    </StyledRoundButton>
-                  </a>
-                  {twitterHandle && (
-                    <ExternalLinkNewTab href={twitterProfileUrl(twitterHandle)} title="Twitter">
-                      <StyledRoundButton size={40} mx={2}>
-                        <Twitter size={14} />
-                      </StyledRoundButton>
-                    </ExternalLinkNewTab>
-                  )}
-                  {githubHandle && (
-                    <ExternalLinkNewTab href={githubProfileUrl(githubHandle)} title="Github">
-                      <StyledRoundButton size={40} mx={2}>
-                        <Github size={14} />
-                      </StyledRoundButton>
-                    </ExternalLinkNewTab>
-                  )}
-                  {website && (
-                    <ExternalLinkNewTab href={website} title={formatMessage(Hero.Translations.website)}>
-                      <StyledRoundButton size={40} mx={2}>
-                        <ExternalLink size={14} />
-                      </StyledRoundButton>
-                    </ExternalLinkNewTab>
-                  )}
-                  {canEditCollective && (
-                    <Link route="editCollective" params={{ slug }} title={formatMessage(Hero.Translations.settings)}>
-                      <StyledRoundButton size={40} mx={2}>
-                        <Settings size={14} />
-                      </StyledRoundButton>
-                    </Link>
+                  {!isFixed && (
+                    <React.Fragment>
+                      <Flex mb={[1, 2, 3]} alignItems="center" justifyContent={['center', 'flex-start']}>
+                        <StyledTag mr={2}>
+                          <I18nCollectiveTags
+                            tags={getCollectiveMainTag(get(collective, 'host.id'), collective.tags)}
+                          />
+                        </StyledTag>
+                        {host && (
+                          <Container ml={3} color="black.600">
+                            <FormattedMessage
+                              id="Collective.Hero.Host"
+                              defaultMessage="{FiscalHost}: {hostName}"
+                              values={{
+                                hostName: host.name,
+                                FiscalHost: <DefinedTerm term={Terms.FISCAL_HOST} />,
+                              }}
+                            />
+                          </Container>
+                        )}
+                      </Flex>
+                      <H2 mt={2} fontSize="LeadParagraph" lineHeight="24px" textAlign={['center', 'left']}>
+                        {collective.description}
+                      </H2>
+                    </React.Fragment>
                   )}
                 </Flex>
               </Flex>
+              {/* Contact buttons */}
+              {!isFixed && (
+                <Flex flexWrap="wrap" justifyContent="center" mt={48}>
+                  <StyledButton disabled width={120} height={40} mb={3} mr={2} title="Coming soon">
+                    <Span mr={2}>
+                      <CheckCircle size="1em" />
+                    </Span>
+                    <FormattedMessage id="CollectivePage.Hero.Follow" defaultMessage="Follow" />
+                  </StyledButton>
+                  <Flex css={{ height: 40 }}>
+                    <a href={`mailto:hello@${slug}.opencollective.com`} title="Email">
+                      <StyledRoundButton size={40} mx={2}>
+                        <Mail size={14} />
+                      </StyledRoundButton>
+                    </a>
+                    {twitterHandle && (
+                      <ExternalLinkNewTab href={twitterProfileUrl(twitterHandle)} title="Twitter">
+                        <StyledRoundButton size={40} mx={2}>
+                          <Twitter size={14} />
+                        </StyledRoundButton>
+                      </ExternalLinkNewTab>
+                    )}
+                    {githubHandle && (
+                      <ExternalLinkNewTab href={githubProfileUrl(githubHandle)} title="Github">
+                        <StyledRoundButton size={40} mx={2}>
+                          <Github size={14} />
+                        </StyledRoundButton>
+                      </ExternalLinkNewTab>
+                    )}
+                    {website && (
+                      <ExternalLinkNewTab href={website} title={formatMessage(Hero.Translations.website)}>
+                        <StyledRoundButton size={40} mx={2}>
+                          <ExternalLink size={14} />
+                        </StyledRoundButton>
+                      </ExternalLinkNewTab>
+                    )}
+                    {canEditCollective && (
+                      <Link route="editCollective" params={{ slug }} title={formatMessage(Hero.Translations.settings)}>
+                        <StyledRoundButton size={40} mx={2}>
+                          <Settings size={14} />
+                        </StyledRoundButton>
+                      </Link>
+                    )}
+                  </Flex>
+                </Flex>
+              )}
             </Flex>
           </Container>
         </Container>
@@ -181,7 +212,7 @@ class Hero extends Component {
           maxWidth={Dimensions.MAX_SECTION_WIDTH}
           px={Dimensions.PADDING_X}
           margin="0 auto"
-          height={[56, null, null, 84]}
+          height={isFixed ? 56 : [56, null, null, 84]}
         >
           <NavBar sections={this.props.sections} selected="join-us" onSectionClick={console.log} />
           <Box py={2} ml={3}>
@@ -193,7 +224,7 @@ class Hero extends Component {
             </StyledButton>
           </Box>
         </Container>
-      </div>
+      </MainContainer>
     );
   }
 }

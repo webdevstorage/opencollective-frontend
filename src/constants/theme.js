@@ -228,6 +228,9 @@ const theme = {
       color: colors.red[700],
     },
   },
+  sizes: {
+    navbarHeight: 68,
+  },
 };
 
 export const buttonStyle = variant({

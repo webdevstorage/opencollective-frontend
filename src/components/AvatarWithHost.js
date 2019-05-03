@@ -27,6 +27,7 @@ const HostLink = styled(LinkCollective)`
  * the bottom right corner.
  */
 const AvatarWithHost = ({ collective, host, radius }) => {
+  const hostAvatarRadius = radius <= 60 ? radius / 2 : radius / 4;
   return (
     <MainContainer>
       <LinkCollective collective={collective}>
@@ -45,8 +46,8 @@ const AvatarWithHost = ({ collective, host, radius }) => {
             type={host.type}
             src={host.image}
             border="1px solid #efefef"
-            radius={radius / 4}
-            borderRadius={radius / 16}
+            radius={hostAvatarRadius}
+            borderRadius={hostAvatarRadius / 4}
             title={host.name}
           />
         </HostLink>

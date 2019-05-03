@@ -69,7 +69,7 @@ const translations = defineMessages({
  */
 const NavBar = ({ sections, selected, onSectionClick, linkBuilder, intl }) => {
   return (
-    <Flex css={{ height: '100%' }}>
+    <Flex css={{ height: '100%', overflowX: 'auto' }}>
       {sections.map(section => (
         <MenuLink
           key={section}
