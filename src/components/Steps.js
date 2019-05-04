@@ -20,6 +20,8 @@ export default class Steps extends React.Component {
     ).isRequired,
     /** The current step name. The step must be present in `steps`. */
     currentStepName: PropTypes.string.isRequired,
+    /** The payment details in `payment` step */
+    stepPayment: PropTypes.object,
     /** Called to change step. */
     onStepChange: PropTypes.func.isRequired,
     /** Called the last step is submitted. */
@@ -165,8 +167,13 @@ export default class Steps extends React.Component {
       return false;
     }
 
+    const goToStepOpt = {};
+    const stepPayment = this.props.stepPayment || {};
     const prevStep = this.props.steps[currentStep.index - 1];
-    this.goToStep(this.buildStep(prevStep, currentStep.index - 1));
+    if (currentStep.isLastStep && stepPayment.isNew && (stepPayment.error || !stepPayment.data)) {
+      goToStepOpt.ignoreValidation = true;
+    }
+    this.goToStep(this.buildStep(prevStep, currentStep.index - 1), goToStepOpt);
     return true;
   };
 
@@ -175,6 +182,12 @@ export default class Steps extends React.Component {
    * if `opts.ignoreValidation` is true.
    */
   goToStep = async (step, opts = {}) => {
+    const currentStep = this.getStepByName(this.props.currentStepName);
+    const stepPayment = this.props.stepPayment || {};
+    if (currentStep.isLastStep && stepPayment.isNew && (stepPayment.error || !stepPayment.data)) {
+      opts.ignoreValidation = true;
+    }
+
     if (!opts.ignoreValidation && !(await this.validateCurrentStep())) {
       return false;
     }

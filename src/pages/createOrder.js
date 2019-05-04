@@ -913,6 +913,7 @@ class CreateOrderPage extends React.Component {
           onStepChange={this.onStepChange}
           onInvalidStep={this.onInvalidStep}
           onComplete={this.submitOrder}
+          stepPayment={this.state.stepPayment}
         >
           {({ steps, currentStep, lastVisitedStep, goNext, goBack, goToStep, isValidating, isValidStep }) => (
             <Flex id="content" flexDirection="column" alignItems="center" mb={6} p={2}>
